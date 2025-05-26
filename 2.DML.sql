@@ -20,6 +20,8 @@ select * from author where id=4; -- where 뒤에 조회 조건을 통해 filteri
 select * from author where name='hong2';
 select * from author where id>3;
 select * from author where id>2 and name='hong4'; -- and 조건 사용 가능
+select * from author where author_id in (1,3,5) ;
+select * from post where author_id in (select id from author where name = 'hong') ; -- 쿼리 안에 서브 쿼리 작성 가능
 
 -- 테스트 데이터 삽입
 -- insert문을 활용해서 author 데이터 3개, post 데이터 5개 추가
