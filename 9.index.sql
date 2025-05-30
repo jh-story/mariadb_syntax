@@ -27,3 +27,27 @@ create index 인덱스명 on 테이블명(컬럼1, 컬럼2);
 
 -- 기존 테이블 삭제 후 아래 테이블로 신규 생성
 create table author(id bigint auto_increment, email varchar(255), name varchar(255), primary key(id));
+
+-- index 테스트 시나리오
+-- 아래 프로시저를 통해 수십만건의 데이터 insert 후에 index 생성 전후에 따른 조회 성능 차이 확인
+DELIMITER //
+CREATE PROCEDURE insert_authors()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE email VARCHAR(100);
+    DECLARE batch_size INT DEFAULT 10000; -- 한 번에 삽입할 행 수
+    DECLARE max_iterations INT DEFAULT 100; -- 총 반복 횟수 (1000000 / batch_size)
+    DECLARE iteration INT DEFAULT 1;
+    WHILE iteration <= max_iterations DO
+        START TRANSACTION;
+        WHILE i <= iteration * batch_size DO
+            SET email = CONCAT('bradkim', i, '@naver.com');
+            INSERT INTO author (email) VALUES (email);
+            SET i = i + 1;
+        END WHILE;
+        COMMIT;
+        SET iteration = iteration + 1;
+        DO SLEEP(0.1); -- 각 트랜잭션 후 0.1초 지연
+    END WHILE;
+END //
+DELIMITER ;
