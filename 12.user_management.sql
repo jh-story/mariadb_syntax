@@ -16,3 +16,4 @@ revoke select on board.author from 'jhjh'@"%";
 show grants for 'jhjh'@"%";
 
 -- 사용자 계정 삭제
+drop user 'jhjh'@"%";

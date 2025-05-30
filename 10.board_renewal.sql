@@ -86,3 +86,4 @@ select title, contents, a.email from post p
 inner join author_post ap on p.id = ap.post_id
 inner join author a on ap.author_id = a.id
 where ap.author_id = 1 or ap.author_id = 3;
+
