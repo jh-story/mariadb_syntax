@@ -9,6 +9,7 @@ docker ps
 
 # docker redis 접속 명령어
 docker exec -it 컨테이너ID redis-cli
+docker exec -it 1d2e9685df3d redis-cli
 1d2e9685df3d
 
 # redis는 0~15번까지의 db로 구성 (default는 0번 db)
@@ -113,3 +114,38 @@ sadd posting:likes:1 a1@naver.com
 smembers posting:likes:1
 
 # zset: sorted set (정렬된 set)
+# zset을 활용해서 최근 시간순으로 정렬 가능
+# zset도 set이므로 같은 상품을 add할 경우에 중복이 제거되고, score(시간) 값만 업데이트
+zadd user:1:recent:product 091330 mango
+zadd user:1:recent:product 091331 apple
+zadd user:1:recent:product 091332 banana
+zadd user:1:recent:product 091333 orange
+zadd user:1:recent:product 091334 apple
+
+# zset 조회: zrange(score 기준 오름차순), zrevrange(score 기준 내림차순)
+# withscores: score까지 함께 출력력
+zrange user:1:recent:product 0 2
+zrange user:1:recent:product -3 -1 # 결과: banana, orange, apple
+zrevrange user:1:recent:product 0 2 withscores # 결과: apple, orange, banana
+
+# 주식 시세 저장 (실시간 변동)
+# 종목: 삼성전자, 시세: 55000원, 시간: 현재시간(유닉스 타임스탬프) -> 년월일시간을 초단위로 변환한 것
+zadd stock:price:se 1748911141 55000
+zadd stock:price:lg 1748911141 100000
+zadd stock:price:se 1748911142 55500
+zadd stock:price:lg 1748911143 110000
+# 삼성전자의 현재 시세
+zrange stock:price:se 0 0
+zrevrange stock:price:se -1 -1
+
+# hashes: value가 map형태의 자료구조 (key:value, key:value ... 형태의 자료구조)
+set member:info:1 "{\"name\":\"hong\", \"email\":\"hong@daum.net\", \"age\":30}"
+hset member:info:1 name hong email hong@daum.net age 30
+# 특정값 조회
+hget member:info:1 name
+# 모든 객체값 조회
+hgetall member:info:1
+# 특정 요소값 수정
+hset member:info:1 name hong3
+
+# redis 활용 상황: 빈번하고 변경되는 객체값을 저장시 효율적
